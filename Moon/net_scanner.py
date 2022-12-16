@@ -14,7 +14,7 @@ def get_arguments():
 def scan(ip):
 
     arp_request = scapy.ARP(pdst=ip)
-    broadcast = scapy.Ether(dst="ff:ff:ff:ff:ff:ff") # testing wlan0 in future!
+    broadcast = scapy.Ether(dst="ff:ff:ff:ff:ff:ff")    # testing wlan0 in future!
     arp_request_broadcast = broadcast/arp_request
 
     answeres_list = scapy.srp(arp_request_broadcast,
