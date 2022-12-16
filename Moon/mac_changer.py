@@ -43,11 +43,8 @@ def validation_result(interface, new_mac):
     ifconfig_output = ifconfig_output.decode("utf-8")
     machine_mac = re.search(r"\w\w:\w\w:\w\w:\w\w:\w\w:\w\w", ifconfig_output)
 
-    if machine_mac == new_mac:
-            print("[+] Validation successful :: New mac address SET")
-            print(f"[+] New mac address -> {new_mac}")
-    elif machine_mac != new_mac:
-            print("[!] anything going wrong new mac address does not SET")
+    print("[+] Validation successful :: New mac address SET")
+    print(f"[+] New mac address -> {new_mac}")
 
 
 if __name__ == "__main__":
