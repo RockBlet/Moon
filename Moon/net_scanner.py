@@ -4,23 +4,18 @@ import optparse
 
 def get_arguments():
     parser = optparse.OptionParser()
-
     parser.add_option("-t", "--target", dest="target", help="target ip address")
-
     (options, arguments) = parser.parse_args()
+
     return options
 
 
-def scan(ip):
-
+def scan(ip: 'ip address') -> dict:
     arp_request = scapy.ARP(pdst=ip)
     broadcast = scapy.Ether(dst="ff:ff:ff:ff:ff:ff")
     arp_request_broadcast = broadcast/arp_request
 
-    answeres_list = scapy.srp(arp_request_broadcast,
-                                timeout=2,
-                                verbose=False)[0]
-
+    answeres_list = scapy.srp(arp_request_broadcast, timeout=2, verbose=False)[0]
     mac_w_ip = []
 
     for element in answeres_list:
@@ -31,7 +26,7 @@ def scan(ip):
     return mac_w_ip
 
 
-def output(data):
+def output(data: dict):
     print("[+] Scan compeleted")
     for item in data:
         ip = item['ip']
