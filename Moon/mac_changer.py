@@ -3,6 +3,7 @@ import subprocess
 import re
 import optparse
 
+
 def get_arguments():
     parser = optparse.OptionParser()
 
