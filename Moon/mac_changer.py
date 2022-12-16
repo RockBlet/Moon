@@ -7,12 +7,8 @@ import optparse
 def get_arguments():
     parser = optparse.OptionParser()
 
-    parser.add_option("-i", "--interface", dest="interface",
-                        help="interface to cahnge its MAC address")
-
-    parser.add_option("-m", "--mac", dest="new_mac",
-                        help="New Mac address")
-
+    parser.add_option("-i", "--interface", dest="interface", help="interface to cahnge its MAC address")
+    parser.add_option("-m", "--mac", dest="new_mac", help="New Mac address")
     parser.add_option("-r", "--random", dest="random_mac",
                       help="for generate random mac address take True // if you want to get"
                            "random mac - dont use with -m flag")
