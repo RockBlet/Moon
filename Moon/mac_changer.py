@@ -13,6 +13,10 @@ def get_arguments():
     parser.add_option("-m", "--mac", dest="new_mac",
                         help="New Mac address")
 
+    parser.add_option("-r", "--random", dest="random_mac",
+                      help="for generate random mac address take True // if you want to get"
+                           "random mac - dont use with -m flag")
+
     (options, arguments) = parser.parse_args()
     return options
 
@@ -55,11 +59,10 @@ if __name__ == "__main__":
     options = get_arguments()
     interface = options.interface
     new_mac = options.new_mac
+    random_mac = options.random_mac
 
-    if not new_mac:
+    if random_mac:
         new_mac = get_random_mac()
 
     change_mac(interface, new_mac)
     validation_result(interface, new_mac)
-
-    print("\n")
