@@ -5,7 +5,6 @@ import time
 
 
 def get_arguments():
-
     parser = optparse.OptionParser()
     parser.add_option("-r", "--route", dest="route_ip", help="router ip address")
     parser.add_option("-t", "--target", dest="target_ip", help="target ip address")
