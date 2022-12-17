@@ -71,4 +71,4 @@ if __name__ == "__main__":
         target_ip = options.target_ip
         restore(target_ip, route_ip)
         restore(route_ip, target_ip)
-        print("[-] Quitting ...")
+        print("\n[-] Quitting ...")

