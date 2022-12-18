@@ -30,14 +30,20 @@ def get_login_info(packet):
                 return str(load_raw)
 
 
+packet_number = 0
+
+
 def process_sniff_packet(packet):
+    global packet_number
     if packet.haslayer(http.HTTPRequest):
         url = get_url(packet)
+        packet_number += 1
+        print(f"[N] >{packet_number}<")
         print(f"\n[+] Url found - {url}")
         login_info = str(get_login_info(packet))
 
         if login_info:
-            print(f"[+] Possible username/login :: \n{login_info}\n\n")
+            print(f"[+] Possible username/login :: \n{login_info}\n", "::"*16)
 
 
 if __name__ == "__main__":
