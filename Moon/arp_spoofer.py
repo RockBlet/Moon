@@ -1,7 +1,6 @@
 import scapy.all as scapy
 import optparse
 import time
-import subprocess
 """RUN ONLY AFTER -> echo 1 > /proc/sys/net/ipv4/ip_forward"""
 
 
@@ -54,7 +53,6 @@ def restore(destantion_ip, source_ip):
 
 
 if __name__ == "__main__":
-    subprocess.call("iptables --flush")
     options = get_arguments()
     packets_list = packets_create(options)
     print("[+] Start sending packets")

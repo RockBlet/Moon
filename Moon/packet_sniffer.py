@@ -46,7 +46,7 @@ def process_sniff_packet(packet):
         url = get_url(packet)
         packet_number += 1
         print(f"[N] >{packet_number}<")
-        print(f"\n[+] Url found - {url}")
+        print(f"[+] Url found - {url}")
         login_info = str(get_login_info(packet))
 
         if login_info:
