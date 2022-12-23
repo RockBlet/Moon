@@ -16,16 +16,18 @@ class Listener:
     def execute_remotely(self, command):
         self.connection.send(command)
         result = self.connection.recv(1024)
+        result = result.decode("utf-8")
         return result
 
     def run(self):
         try:
             while True:
                 command = str(input(">> "))
-                commad = command.encode("utf-8")
+                command = command.encode("utf-8")
                 result = self.execute_remotely(command)
                 print(result)
         except KeyboardInterrupt:
+            print("[-] Quiting")
             self.connection.close()
 
 
