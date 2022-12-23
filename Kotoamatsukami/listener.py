@@ -38,6 +38,7 @@ class Listener:
             while True:
                 command = str(input(">> "))
                 result = self.execute_remotely(command)
+                print(result)
         except KeyboardInterrupt:
             print("\n[-] Quiting")
             self.connection.close()
