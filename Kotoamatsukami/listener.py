@@ -71,10 +71,8 @@ class Listener:
 
 if __name__ == "__main__":
 
-    print("get :H: ip")
-    ip = str(input(">> "))
-    print("get port")
-    port = int(input(">> "))
+    ip = "172.17.122.79"
+    port = 8080
 
     listener = Listener(ip, port)
     listener.run()
