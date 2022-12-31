@@ -1,16 +1,32 @@
 import socket
 import json
 import base64
+import subprocess
 
 
 class Listener:
     def __init__(self, ip, port):
         listener = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         listener.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        listener.bind((ip, port))
+
+        self.ip = ip
+        self.port = port
+        self.host_name = socket.gethostname()
+
+        listener.bind((self.ip, self.port))
         listener.listen(4)
 
-        print("[+] Waiting for incoming connection")
+        server_about = {
+            "HostName": self.host_name,
+            "Ip": self.ip,
+            "Port": self.port
+        }
+
+        print("[+] Server info")
+        for key in server_about:
+            print(f"{key} <-> {server_about[key]}")
+
+        print("\n[+] Waiting for incoming connection")
         self.connection, address = listener.accept()
         print(f"[+] Got a connection -> from :: {str(address)}")
 
@@ -71,8 +87,23 @@ class Listener:
 
 if __name__ == "__main__":
 
-    ip = "172.17.122.79"
-    port = 8080
+    term: bool = True
 
+    if term:
+        subprocess.call("clear")
+        tag = ["╔═╗╔═╗╔═══╗╔═══╗╔═╗─╔╗",
+               "║║╚╝║║║╔═╗║║╔═╗║║║╚╗║║",
+               "║╔╗╔╗║║║─║║║║─║║║╔╗╚╝║",
+               "║║║║║║║║─║║║║─║║║║╚╗║║",
+               "║║║║║║║╚═╝║║╚═╝║║║─║║║",
+               "╚╝╚╝╚╝╚═══╝╚═══╝╚╝─╚═╝"]
+
+        for i in tag:
+            print(f"\t{i}")
+        print("-"*42)
+
+
+    ip = socket.gethostbyname(socket.gethostname())
+    port = 8080
     listener = Listener(ip, port)
     listener.run()
