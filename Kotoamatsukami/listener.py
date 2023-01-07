@@ -81,6 +81,7 @@ class Listener:
                     print(result)
 
                 result = self.execute_remotely(command)
+                print(f"[!] result type -> {type(result)}")
                 print(f"\n[result]\n{result}\n[#####]\n")
 
         except KeyboardInterrupt:

